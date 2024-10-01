@@ -1,0 +1,11 @@
+<div class="container-fluid h-100">
+  <div class="row h-100 justify-content-center align-items-center">
+    <div class="col-sm-12">
+      <router-outlet></router-outlet>
+    </div>
+  </div>
+  <ngx-spinner 
+    bdColor="rgba(0, 0, 0, 0.8)" size="medium" color="#fff" [fullScreen]="true">
+    <p style="color: white">Cargando...</p>
+  </ngx-spinner>
+</div>

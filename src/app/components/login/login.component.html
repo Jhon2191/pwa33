@@ -1,0 +1,18 @@
+<div class="login-container">
+    <div class="welcome-text">
+      <h1 class="title">BIENVENIDOS</h1>
+      <h2 class="subtitle">Que tengas un excelente día</h2>
+    </div>
+    
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
+      <mat-form-field appearance="fill">
+        <mat-label>numero de documento</mat-label>
+        <input matInput formControlName="username" required>
+      </mat-form-field>
+      
+      <mat-form-field appearance="fill">
+        <mat-label>Codigo de acceso</mat-label>
+        <input matInput type="password" formControlName="password" required>
+      </mat-form-field>
+    </form>
+  </div>

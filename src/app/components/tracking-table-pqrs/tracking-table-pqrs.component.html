@@ -1,0 +1,43 @@
+<div class="p-3">
+  <div class="row">
+    <div class="col-sm-12 col-md-3">
+      <mat-form-field appearance="fill" class="w-100">
+        <mat-label>Radicado</mat-label>
+        <input [(ngModel)]="filingNumber" type="number" matInput placeholder="Numero de radicado">
+      </mat-form-field>
+    </div>
+    <div class="col-sm-12 col-md-3">
+      <mat-form-field appearance="fill" class="w-100">
+        <mat-label>Código de seguridad</mat-label>
+        <input [(ngModel)]="securityCode" type="text" matInput placeholder="Código de seguridad">
+      </mat-form-field>
+    </div>
+    <div class="col-sm-12 col-md-3">
+      <button (click)="onClickSearchPqrsExternal()" [disabled]="filingNumber === null || securityCode === null || filingNumber === undefined || securityCode === undefined" type="button" mat-raised-button color="primary" class="w-100"
+        style="height: 60px; font-weight: 600;">Buscar</button>
+    </div>
+    <div class="col-sm-12 col-md-12">
+      <table mat-table [dataSource]="listPqrs" class="w-100">
+        <ng-container *ngFor="let column of configColumnsTable">
+          <ng-container [matColumnDef]="column.key" *ngIf="column.key !== 'actions'">
+            <th mat-header-cell *matHeaderCellDef> {{ column.name }} </th>
+            <td class="text-center" mat-cell *matCellDef="let element"> {{ element[column.key] }} </td>
+          </ng-container>
+          <ng-container [matColumnDef]="column.key" *ngIf="column.key === 'actions'">
+            <th mat-header-cell *matHeaderCellDef> {{ column.name }} </th>
+            <td class="text-center" mat-cell width="10%" class="text-center ps-0" *matCellDef="let element">
+              <button mat-icon-button (click)="onClickButtonShow(element)">
+                <mat-icon>visibility</mat-icon>
+              </button>
+            </td>
+          </ng-container>
+        </ng-container>
+        <tr mat-header-row *matHeaderRowDef="keysColumnsTable"></tr>
+        <tr style="background: white" mat-row *matRowDef="let row; columns: keysColumnsTable;"></tr>
+        <tr class="mat-row" style="background: white" *matNoDataRow>
+          <td class="mat-cell text-center" [attr.colspan]="keysColumnsTable.length">La búsqueda no coincide con los registros</td>
+        </tr>
+      </table>
+    </div>
+  </div>
+</div>

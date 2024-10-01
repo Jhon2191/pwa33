@@ -1,0 +1,11 @@
+<div class="d-flex justify-content-between align-items-center">
+  <h3 class="fw-bold">{{ titleDialog }}</h3>
+  <div *ngIf="data.pqrs.state === 'Devuelto'" class="alert alert-warning fw-semibold" role="alert">
+    Su PQRS ha sido devuelta, por favor, edite la información haciendo clic <span style="cursor: pointer;"
+      class="fw-bold" (click)="disabledFields = false">aquí</span>
+  </div>
+</div>
+<div mat-dialog-content>
+  <app-form-register-pqrs [dataPqrsView]="data.pqrs" [disabledFields]="disabledFields"
+    (onSubmitForm)="onCloseDialog()"></app-form-register-pqrs>
+</div>

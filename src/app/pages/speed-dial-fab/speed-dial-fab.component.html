@@ -1,0 +1,3 @@
+<app-vicidial-voz (vicidialActive)="changeVicidialArg($event)"
+  (viewPhoneButton)="changeViewPhone($event)" (callResponse)="processCallResponse($event)"
+  [phoneDial]="vicidialService.getPhoneNumber()"></app-vicidial-voz>

@@ -1,0 +1,206 @@
+<form class="p-3" [formGroup]="formPqrsExternal">
+  <div class="row gy-1">
+    <div class="col-sm-12 col-md-4">
+      <mat-form-field appearance="fill" class="w-100">
+        <mat-label>Tipo de PQRS</mat-label>
+        <mat-select (selectionChange)="onChangeTypePqrs($event)" formControlName="incident_id">
+          <mat-option *ngFor="let item of dataForm?.incidents" [value]="item.id">{{ item.name }}</mat-option>
+        </mat-select>
+        <mat-error *ngIf="error.incident_id.errors">
+          <span *ngIf="error.incident_id.errors.required">El campo es requerido</span>
+        </mat-error>
+      </mat-form-field>
+    </div>
+    <div class="col-sm-12 col-md-4">
+      <mat-form-field appearance="fill" class="w-100">
+        <mat-label>Subtipo de PQRS</mat-label>
+        <mat-select formControlName="sub_incident_id">
+          <mat-option *ngFor="let item of subTypesPqrs" [value]="item.id">{{ item.name }}</mat-option>
+        </mat-select>
+        <mat-error *ngIf="error.sub_incident_id.errors">
+          <span *ngIf="error.sub_incident_id.errors.required">El campo es requerido</span>
+        </mat-error>
+      </mat-form-field>
+    </div>
+    <div class="col-sm-12 col-md-4">
+      <mat-form-field appearance="fill" class="w-100">
+        <mat-label>¿Desea radicar como?</mat-label>
+        <mat-select (selectionChange)="onChangeRadicalAsAPerson($event)" formControlName="is_anonymous">
+          <mat-option [value]="1">Anónimo</mat-option>
+          <mat-option [value]="0">Nombre propio</mat-option>
+        </mat-select>
+        <mat-error *ngIf="error.is_anonymous.errors">
+          <span *ngIf="error.is_anonymous.errors.required">El campo es requerido</span>
+        </mat-error>
+      </mat-form-field>
+    </div>
+    <div class="col-sm-12 col-md-6">
+      <mat-form-field appearance="fill" class="w-100">
+        <mat-label>Tipo de documento</mat-label>
+        <mat-select formControlName="document_type_id">
+          <mat-option *ngFor="let item of dataForm?.document_types" [value]="item.id">{{ item.name }}</mat-option>
+        </mat-select>
+        <mat-error *ngIf="error.document_type_id.errors">
+          <span *ngIf="error.document_type_id.errors.required">El campo es requerido</span>
+        </mat-error>
+      </mat-form-field>
+    </div>
+    <div class="col-sm-12 col-md-6">
+      <mat-form-field appearance="fill" class="w-100">
+        <mat-label>Documento</mat-label>
+        <input type="number" matInput placeholder="documento del solicitante" formControlName="num_document">
+        <mat-error *ngIf="error.num_document.errors">
+          <span *ngIf="error.num_document.errors.required">El campo es requerido</span>
+        </mat-error>
+      </mat-form-field>
+    </div>
+    <div class="col-sm-12 col-md-6">
+      <mat-form-field appearance="fill" class="w-100">
+        <mat-label>Primer nombre</mat-label>
+        <input matInput placeholder="Primer nombre" formControlName="first_name">
+        <mat-error *ngIf="error.first_name.errors">
+          <span *ngIf="error.first_name.errors.required">El campo es requerido</span>
+          <span *ngIf="error.first_name.errors.pattern">Cadena inválida</span>
+        </mat-error>
+      </mat-form-field>
+    </div>
+    <div class="col-sm-12 col-md-6">
+      <mat-form-field appearance="fill" class="w-100">
+        <mat-label>Segundo nombre (Opcional)</mat-label>
+        <input matInput placeholder="Segundo nombre" formControlName="second_name">
+        <mat-error *ngIf="error.second_name.errors">
+          <span *ngIf="error.second_name.errors.pattern">Cadena inválida</span>
+        </mat-error>
+      </mat-form-field>
+    </div>
+    <div class="col-sm-12 col-md-6">
+      <mat-form-field appearance="fill" class="w-100">
+        <mat-label>Primer apellido</mat-label>
+        <input matInput placeholder="Primer apellido" formControlName="first_last_name">
+        <mat-error *ngIf="error.first_last_name.errors">
+          <span *ngIf="error.first_last_name.errors.required">El campo es requerido</span>
+          <span *ngIf="error.first_last_name.errors.pattern">Cadena inválida</span>
+        </mat-error>
+      </mat-form-field>
+    </div>
+    <div class="col-sm-12 col-md-6">
+      <mat-form-field appearance="fill" class="w-100">
+        <mat-label>Segundo apellido (Opcional)</mat-label>
+        <input matInput placeholder="Primer apellido" formControlName="second_last_name">
+        <mat-error *ngIf="error.second_last_name.errors">
+          <span *ngIf="error.second_last_name.errors.pattern">Cadena inválida</span>
+        </mat-error>
+      </mat-form-field>
+    </div>
+    <div class="col-sm-12 col-md-4">
+      <mat-form-field appearance="fill" class="w-100">
+        <mat-label>Teléfono</mat-label>
+        <input type="number" matInput placeholder="Telefono" formControlName="phone">
+      </mat-form-field>
+    </div>
+    <div class="col-sm-12 col-md-4">
+      <mat-form-field appearance="fill" class="w-100">
+        <mat-label>Celular</mat-label>
+        <input type="number" matInput placeholder="Celular" formControlName="cel_phone">
+        <mat-error *ngIf="error.cel_phone.errors">
+          <span *ngIf="error.cel_phone.errors.required">El campo es requerido</span>
+        </mat-error>
+      </mat-form-field>
+    </div>
+    <div class="col-sm-12 col-md-4">
+      <mat-form-field appearance="fill" class="w-100">
+        <mat-label>Correo</mat-label>
+        <input matInput placeholder="Correo del solicitante" formControlName="email">
+        <mat-error *ngIf="error.email.errors">
+          <span *ngIf="error.email.errors.required">El campo es requerido</span>
+          <span *ngIf="error.email.errors.email">El campo es inválido</span>
+        </mat-error>
+      </mat-form-field>
+    </div>
+    <div class="col-sm-12 col-md-4">
+      <mat-form-field appearance="fill" class="w-100">
+        <mat-label>Género</mat-label>
+        <mat-select formControlName="gender_id">
+          <mat-option *ngFor="let item of dataForm?.genders" [value]="item.id">{{ item.name }}</mat-option>
+        </mat-select>
+        <mat-error *ngIf="error.gender_id.errors">
+          <span *ngIf="error.gender_id.errors.required">El campo es requerido</span>
+        </mat-error>
+      </mat-form-field>
+    </div>
+    <div class="col-sm-12 col-md-4">
+      <mat-form-field appearance="fill" class="w-100">
+        <mat-label>Tipo de solicitante</mat-label>
+        <mat-select formControlName="claimant_type_id">
+          <mat-option *ngFor="let item of dataForm?.claimant_types" [value]="item.id">{{ item.name }}</mat-option>
+        </mat-select>
+        <mat-error *ngIf="error.claimant_type_id.errors">
+          <span *ngIf="error.claimant_type_id.errors.required">El campo es requerido</span>
+        </mat-error>
+      </mat-form-field>
+    </div>
+    <div class="col-sm-12 col-md-4">
+      <mat-form-field appearance="fill" class="w-100">
+        <mat-label>Compañía</mat-label>
+        <mat-select formControlName="company_id">
+          <mat-option *ngFor="let item of dataForm?.companies" [value]="item.id">{{ item.name }}</mat-option>
+        </mat-select>
+        <mat-error *ngIf="error.company_id.errors">
+          <span *ngIf="error.company_id.errors.required">El campo es requerido</span>
+        </mat-error>
+      </mat-form-field>
+    </div>
+    <div class="col-sm-12 col-md-12">
+      <mat-form-field appearance="fill" class="w-100">
+        <mat-label>Descripción</mat-label>
+        <textarea matInput placeholder="Descripción de los hechos" formControlName="description_facts"></textarea>
+        <mat-error *ngIf="error.description_facts.errors">
+          <span *ngIf="error.description_facts.errors.required">El campo es requerido</span>
+        </mat-error>
+      </mat-form-field>
+    </div>
+    <div class="col-sm-12 col-md-12">
+      <mat-form-field appearance="fill" class="w-100">
+        <mat-chip-list #chipListAdjuntos>
+          <mat-chip *ngFor="let item of getArrayFiles(); let i = index" [selectable]="true" [removable]="true"
+            (removed)="removeItem(i)">
+            {{ item.value.file.name }}
+            <mat-icon matChipRemove>cancel</mat-icon>
+          </mat-chip>
+          <input readonly placeholder="Adjuntos" #inputAdjuntos [matChipInputFor]="chipListAdjuntos"
+            [matChipInputSeparatorKeyCodes]="separatorKeysCodes" [matChipInputAddOnBlur]="true">
+          <button type="button" mat-icon-button matSuffix (click)="inputAdjuntosHidden.click()">
+            <mat-icon>file_present</mat-icon>
+          </button>
+        </mat-chip-list>
+      </mat-form-field>
+      <div style="font-size: 11px; color: #c62828" *ngIf="error.files.errors">
+        <span *ngIf="error.files.errors.validateSizeFiles">Máximo 20 MB</span>
+      </div>
+    </div>
+    <div class="col-md-12" *ngIf="dataPqrsView && dataPqrsView.files && dataPqrsView.files.length > 0">
+      <mat-chip-list #chipListPreloadFiles>
+        <mat-chip *ngFor="let file of dataPqrsView.files" (removed)="downloadFile(file.id)" [selectable]="true"
+          [removable]="true">
+          {{ file.name }}
+          <mat-icon matChipRemove>download</mat-icon>
+        </mat-chip>
+      </mat-chip-list>
+    </div>
+    <div class="col-md-12 mt-4">
+      <app-management-history *ngIf="dataPqrsView && dataPqrsView.managements.length > 0"
+        [managments]="dataPqrsView.managements" [statePqrs]="dataPqrsView.state" (sendFileManagment)="downloadFile($event, 'management-attachments')"></app-management-history>
+    </div>
+  </div>
+  <div *ngIf="!disabledFields" class="row mt-4 d-flex justify-content-end gy-2">
+    <div class="col-sm-12 col-md-4">
+      <button (click)="onSaveForm()" type="button" mat-raised-button color="primary" class="w-100"
+        style="height: 48px; font-weight: 600;">Guardar</button>
+    </div>
+    <div class="col-sm-12 col-md-4">
+      <button (click)="onClickButtonCancel()" type="button" mat-raised-button class="w-100"
+        style="height: 48px; font-weight: 600; color: #A9A9A9; border: 2px solid #A9A9A9; background-color: #FFFFFF;">Cancelar</button>
+    </div>
+  </div>
+  <input accept=".pdf, .jpg, .jpeg, .png, .svg, .xlsx, .docx, .mp4, .aac, .mp3" (change)="addFile($event)" type="file" hidden #inputAdjuntosHidden multiple>
+</form>

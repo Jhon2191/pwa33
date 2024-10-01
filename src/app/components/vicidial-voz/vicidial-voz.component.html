@@ -1,0 +1,301 @@
+<div class="state-voz" *ngIf="vozButton">
+  <button mat-button (click)="viewPhone()" [ngClass]="vozState" class="phone-status"><mat-icon>phone</mat-icon></button>
+</div>
+<!-- Seleccionar Campña -->
+<div *ngIf="viewPhoneState" class="phone">
+  <mat-card [ngStyle]="{'width': dataCallSumary ? '700px' : '320px'}">
+    <div class="row" *ngIf="campaignSelected">
+      <div class="col">
+        <button mat-button [matMenuTriggerFor]="menuReady" [disabled]="pauseToTypify"><i
+            ngClass="{'fi-rr-play':vozState == 'pause','fi-rr-pause':vozState == 'ready'}" class="fi-rr-play"></i> {{
+          translateStringStatus() }}</button>
+        <mat-form-field appearance="outline" *ngIf="vozState == 'pause'" style="width: 55%">
+          <mat-select [(ngModel)]="currentPause" (selectionChange)="onChangePause($event)">
+            <mat-option *ngFor="let pauseOption of pauseOptions; let i = index" [value]="pauseOption"
+              [disabled]="isOptionDisabled(i)">{{ pauseOption.name }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+        <mat-menu #menuReady="matMenu">
+          <!-- <button *ngIf="vozState == 'pause'" mat-menu-item (click)="changeVozState('ready')"><i class="fi-rr-play"></i> Reanudar</button>-->
+          <button *ngIf="vozState == 'ready'" [disabled]="errorNetwork || errorNotAgentChannel" mat-menu-item
+            (click)="changeVozState('pause')"><i class="fi-rr-pause"></i> Pausar</button>
+          <button mat-menu-item (click)="changeVozState('logout')"><i class="fi-rr-sign-out"></i>
+            Salir</button>
+        </mat-menu>
+      </div>
+    </div>
+    <mat-card-content class="w-100">
+      <div class="d-flex justify-content-between">
+        <div *ngIf="dataCallSumary" class="w-100" [@fadeInOnEnter] [@fadeOut]>
+          <app-call-summary [dataCallSumary]="dataCallSumary"></app-call-summary>
+        </div>
+        <div class="w-100">
+          <div *ngIf="!campaignSelected">
+            <mat-form-field appearance="fill" style="width: 100%">
+              <mat-label>Seleccione la Campaña</mat-label>
+              <!-- (selectionChange)="selectCampaign(group.value)" -->
+              <mat-select class="form-control" (selectionChange)="selectCampaign(campaign.value)" #campaign
+                name="campaignSelected">
+                <mat-option *ngFor="let config of vicidialConfigs" [value]="config">{{
+                  config.vicidial_config.campaign_vicidial }}</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+          <div *ngIf="errorNetwork">
+            <br />
+            <div class="mt-3" style="font-size: 20px; align-content: center; text-align: center">Error de
+              comunicación, intentando restablecer conexión.</div>
+          </div>
+          <div *ngIf="errorNotAgentChannel">
+            <br />
+            <div class="mt-3" style="font-size: 20px; align-content: center; text-align: center">
+              Revisar conexión al marcador, y reiniciar servicio.
+            </div>
+            <button mat-stroked-button color="Warn" style="width: 100%" (click)="vdRelogin()">
+              <span>Solicitar nueva conferencia</span>
+            </button>
+          </div>
+          <mat-tab-group *ngIf="(!errorNetwork || !errorNotAgentChannel) && campaignSelected">
+            <mat-tab label="Teclado">
+              <br />
+              <div *ngIf="vozState == 'pause' && !pauseToTypify">
+                <mat-form-field appearance="fill" style="width: 100%">
+                  <mat-label>Seleccione el grupo</mat-label>
+                  <mat-select class="form-control" #group (selectionChange)="selectedGroup(group.value)"
+                    name="groupSelected" [(ngModel)]="groupSelected" multiple>
+                    <mat-option *ngFor="let group of optionsIVR" [value]="group">{{ group }}</mat-option>
+                  </mat-select>
+                </mat-form-field>
+                <br />
+                <section
+                  *ngIf="this.cleanString(myVars.dial_method) == 'RATIO' || this.cleanString(myVars.dial_method) == 'INBOUND_MAN'">
+                  <mat-checkbox [(ngModel)]="CloserSelectBlended">Blended</mat-checkbox>
+                </section>
+                <br />
+                <button *ngIf="optionsIVR.length > 0; else notSkills" mat-raised-button color="primary"
+                  style="width: 100%" (click)="selectGroup()"
+                  [disabled]="groupSelected !== null && groupSelected.length > 0 ? false : true">
+                  <span *ngIf="!inCommingActivated && vozState == 'pause'">Entrar</span> <span
+                    *ngIf="inCommingActivated && vozState == 'pause'">Reanudar</span>
+                </button>
+                <ng-template #notSkills>
+                  <button mat-raised-button color="primary" style="width: 100%" (click)="selectGroup()">
+                    <span *ngIf="!inCommingActivated && vozState == 'pause'">Entrar</span> <span
+                      *ngIf="inCommingActivated && vozState == 'pause'">Reanudar</span>
+                  </button>
+                </ng-template>
+                <br />
+                <br>
+                <button mat-stroked-button color="primary" style="width: 100%" (click)="requestCall()">
+                  <span>Solicitar llamada</span>
+                </button>
+                <mat-form-field class="mt-3" appearance="fill" style="width: 100%">
+                  <mat-label>Número de teléfono:</mat-label>
+                  <input matInput placeholder="3201234567" [(ngModel)]="telephone" type="number" min="1"
+                    max="9999999999999" (keyup.enter)="changeToDialCallManual()" [disabled]="inputPhoneDisabled" />
+                </mat-form-field>
+                <br />
+                <button mat-raised-button color="primary" style="width: 100%" (click)="changeToDialCallManual()"
+                  [disabled]="!telephone || telephone > 10000000000000">Llamar</button>
+              </div>
+              <div *ngIf="pauseToTypify && !inCommingResponse">
+                <div class="mt-3" style="font-size: 20px; align-content: center; text-align: center">En espera
+                  de tipificación del cliente.</div>
+              </div>
+              <div *ngIf="vozState == 'ready'">
+                <div *ngIf="groupSelected" class="mt-3"
+                  style="font-size: 20px; align-content: center; text-align: center">
+                  {{ groupSelected }}
+                </div>
+                <div class="mt-3" style="font-size: 20px; align-content: center; text-align: center">En espera
+                  de llamada entrante...</div>
+              </div>
+              <div class="mt-5" *ngIf="vozState == 'incall'"
+                style="font-size: 14px; align-content: center; text-align: center">
+                Llamando...
+                <br />
+                <div *ngIf="telephone == null || telephone == ''">
+                  {{this.manualDialCallResponse?.phoneCustomer}}
+                </div>
+                <div class="mt-3" style="font-size: 20px; align-content: center; text-align: center">
+                  {{ telephone }}
+                </div>
+                <div *ngIf="callInBound" class="mt-3"
+                  style="display: flex; align-content: center; text-align: center; font-size: 20px; opacity: 1; color: gray">
+                  <div class="col" style="display: grid">
+                    <i class="fi-rr-pause"></i>
+                    <span style="font-size: 14px">Pausa</span>
+                  </div>
+                  <div class="col" style="display: grid">
+                    <i class="fi-rr-shuffle"></i>
+                    <span style="font-size: 14px">Transferir</span>
+                  </div>
+                </div>
+                <button class="mt-5" mat-raised-button
+                  style="width: 100%; background: #b72727 0% 0% no-repeat padding-box; color: #ffff"
+                  (click)="hangoutConfDialManual()">Colgar</button>
+              </div>
+              <div class="mt-2" style="font-size: 16px;"
+                [ngStyle]="{ color: configCheckResponse?.callsInQueue > 5 ? 'red' : 'initial' }">
+                <p><b>Llamadas en espera: </b>{{ configCheckResponse?.callsInQueue }}</p>
+              </div>
+              <!-- Cambiar a conectado -->
+              <div *ngIf="vozState == 'conectado'" style="font-size: 14px;">
+                <div class="d-flex flex-column" style="gap: 0.5rem;">
+                  <div>Conectado:</div>
+                  <div style="font-size: 16px;" *ngIf="inCommingResponse">
+                    <span class="fw-bold">{{ inCommingResponse.ivrSelected }}</span>
+                  </div>
+                </div>
+                <div class="d-flex flex-column" style="gap: 0.5rem;">
+                  <div style="font-size: 14px;">Linea:</div>
+                  <div style="font-size: 16px;" class="fw-bold">{{ telephone }}</div>
+                  <div style="font-size: 14px;">Duración de la llamada actual:</div>
+                  <div style="font-size: 16px;" class="fw-bold">{{ format(mm) }}:{{ format(ss) }}</div>
+                </div>
+                <div class="d-flex flex-column" style="gap: 0.5rem;">
+                  <div style="font-size: 14px;">Canal de contacto:</div>
+                  <div style="font-size: 16px;" class="fw-bold"
+                    style="cursor: pointer; padding-bottom: 10px" (click)="rpa()">
+                    Gestion Outbound -
+                    Whatsapp</div>
+                </div>
+                <div class="d-flex flex-column" style="gap: 0.5rem;" *ngIf="configCheckResponse.DEADcall >= 1">
+                  <div style="font-size: 14px;">Estado:</div>
+                  <div style="font-size: 16px;" class="fw-bold">Dead Call</div>
+                </div>
+                <div style="font-size: 14px;" class="mb-2">Acciones:</div>
+                <div *ngIf="callInBound" class="mt-3"
+                  style="display: flex; align-content: center; text-align: center; font-size: 20px">
+                  <div class="col" style="display: grid; cursor: pointer" (click)="parking()"
+                    *ngIf="callPause == false">
+                    <i class="fi-rr-pause"></i>
+                    <span style="font-size: 14px">Pausa</span>
+                  </div>
+                  <div class="col" style="display: grid; cursor: pointer" (click)="recoveryParking()"
+                    *ngIf="callPause == true">
+                    <i class="fi-rr-pause" style="color: #2cabbc"></i>
+                    <span style="font-size: 14px">Pausa</span>
+                    <div class="display" style="font-size: 14px">{{ format(mmPause) }}:{{ format(ssPause) }}
+                    </div>
+                  </div>
+                  <div class="col" style="display: grid; cursor: pointer" [matMenuTriggerFor]="transferir"
+                    [ngClass]="{ disabled: isTransfer }">
+                    <i class="fi-rr-shuffle"></i>
+                    <span style="font-size: 14px">Transferir</span>
+                  </div>
+                  <div *ngIf="showButtonCallSumary" class="col" style="display: grid; cursor: pointer" (click)="onClickButtonResBot()">
+                    <i class="fi-rr-text"></i>
+                    <span style="font-size: 14px">Res Bot</span>
+                  </div>
+                  <mat-menu #transferir="matMenu" class="menu-form-wrapper" [hasBackdrop]="false">
+                    <button [matMenuTriggerFor]="groups" mat-menu-item
+                      [ngClass]="{ disabled: isTransfer }">Grupos</button>
+                    <button [matMenuTriggerFor]="blindTransfer" mat-menu-item [ngClass]="{ disabled: isTransfer }">Blind
+                      Transfer</button>
+                  </mat-menu>
+                  <mat-menu #groups="matMenu" class="menu-form-wrapper">
+                    <button *ngFor="let xfergroup of myVars.xfergroups" mat-menu-item
+                      (click)="transferCloser(xfergroup)">{{
+                      xfergroup }}</button>
+                  </mat-menu>
+                  <mat-menu #blindTransfer="matMenu" style="padding: 10px !important">
+                    <div (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()"
+                      style="padding: 10px !important">
+                      <mat-form-field appearance="fill" style="width: 100%">
+                        <mat-label>Número de teléfono:</mat-label>
+                        <input matInput placeholder="3201234567" [(ngModel)]="phone2" type="number" min="1"
+                          max="9999999999999" />
+                      </mat-form-field>
+                    </div>
+                    <div style="padding: 10px !important">
+                      <button mat-raised-button color="primary" style="width: 100%" (click)="transferBlind()"
+                        [disabled]="!phone2 || phone2 > 10000000000000">Blind
+                        Transfer</button>
+                      <button class="mt-1" mat-raised-button color="primary" style="width: 100%"
+                        (click)="xfer3WayCallDial()" [disabled]="!phone2 || phone2 > 10000000000000">Dial with
+                        customer</button>
+                      <button class="mt-1" mat-raised-button color="primary" style="width: 100%"
+                        (click)="parkCustomerDial()" [disabled]="!phone2 || phone2 > 10000000000000">Park with
+                        customer</button>
+                    </div>
+                  </mat-menu>
+                </div>
+                <button class="mt-5" mat-raised-button
+                  style="width: 100%; background: #b72727 0% 0% no-repeat padding-box; color: #ffff"
+                  (click)="hangUp(callInBound)"
+                  [disabled]="disableHangout || (callPause && callXferPause) || isTransfer">
+                  Colgar
+                </button>
+              </div>
+              <div>
+                <hr />
+                <div *ngIf="callingXfer" style="font-size: 14px; align-content: center; text-align: center">
+                  Llamando...</div>
+                <div *ngIf="isTransfer" style="font-size: 14px; align-content: center; text-align: center">
+                  Conectado
+                  <br />
+                  <div class="mt-3" style="font-size: 20px; align-content: center; text-align: center">
+                    {{ phone2 }}
+                    <br />
+                    <div class="display">{{ format(mmXfer) }}:{{ format(ssXfer) }}</div>
+                  </div>
+                  <div *ngIf="callInBound" class="mt-3"
+                    style="display: flex; align-content: center; text-align: center; font-size: 20px">
+                    <div class="col" style="display: grid; cursor: pointer" (click)="parkCallXfer()"
+                      *ngIf="callXferPause == false">
+                      <i class="fi-rr-pause"></i>
+                      <span style="font-size: 14px">Pausa</span>
+                    </div>
+                    <div class="col" style="display: grid; cursor: pointer" (click)="recoveryCallXfer()"
+                      *ngIf="callXferPause == true">
+                      <i class="fi-rr-pause" style="color: #2cabbc"></i>
+                      <span style="font-size: 14px">Pausa</span>
+                      <div class="display" style="font-size: 14px">{{ format(mmPauseXfer) }}:{{
+                        format(ssPauseXfer) }}</div>
+                    </div>
+                    <div class="col" style="display: grid; cursor: pointer" [matMenuTriggerFor]="endCall">
+                      <i><mat-icon>call_end</mat-icon></i>
+                      <span style="font-size: 14px">Colgar</span>
+                    </div>
+                    <mat-menu #endCall="matMenu" class="menu-form-wrapper" [hasBackdrop]="false">
+                      <button class="mt-1" mat-menu-item (click)="hangupXFerCall()">Línea Xfer</button>
+                      <button class="mt-1" mat-menu-item (click)="hangupBothCalls()">Ambas líneas</button>
+                      <button class="mt-1" mat-menu-item (click)="redirectXTraNew()"
+                        [disabled]="callPause && callXferPause">Abandonar</button>
+                    </mat-menu>
+                  </div>
+                </div>
+              </div>
+              <!-- Comienzo DTMF -->
+              <div *ngIf="isTransfer || manualDialCalLookUpResponse"
+                style="display: flex; align-content: center; text-align: center; font-size: 20px">
+                <div class="col" style="display: grid; cursor: pointer" [matMenuTriggerFor]="dtmf">
+                  <i class="fi-rr-grid"></i>
+                  <span style="font-size: 14px">DTMF</span>
+                </div>
+                <mat-menu #dtmf="matMenu">
+                  <div (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()"
+                    style="padding: 10px !important">
+                    <mat-form-field appearance="fill" style="width: 100%">
+                      <mat-label>DTMF:</mat-label>
+                      <input matInput [(ngModel)]="option" type="number" min="1" (keyup.enter)="sendDTMF()" />
+                    </mat-form-field>
+                  </div>
+                  <div style="padding: 10px !important">
+                    <button mat-raised-button color="primary" style="width: 100%" (click)="sendDTMF()"
+                      [disabled]="!option">Enviar</button>
+                  </div>
+                </mat-menu>
+              </div>
+              <!-- FIN DTMF -->
+            </mat-tab>
+          </mat-tab-group>
+        </div>
+      </div>
+    </mat-card-content>
+    <mat-card-actions align="end">
+      <label>Extensión: {{ myVars?.extension }}</label>
+    </mat-card-actions>
+  </mat-card>
+</div>

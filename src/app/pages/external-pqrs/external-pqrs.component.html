@@ -1,0 +1,35 @@
+<div class="container p-5">
+  <header>
+    <h2 class="fw-bold">PQRS Externa</h2>
+  </header>
+  <section class="mt-3">
+    <mat-tab-group #mainTabGroup [selectedIndex]="selectIndexTab">
+      <mat-tab label="Políticas" [disabled]="stateStepPolicies">
+        <div class="p-3 d-flex flex-column justify-content-center">
+          <p class="text-justify fst-italic">GRUPO COS Bogotá – Colombia, informa que los datos personales que usted
+            suministrará al sistema, serán tratados mediante el uso y mantenimiento de medidas de seguridad técnicas,
+            físicas y administrativas y su confidencialidad estará garantizada de conformidad con lo definido en la Ley
+            1581 de 2012, el Decreto Reglamentario 1377 de 2013, la Resolución 1867 del 13 de mayo de 2014.</p>
+          <p class="text-justify fst-italic">Acepto la <a class="text-black"
+              href="https://groupcosbpo.com/wp-content/uploads/2023/08/Politica-de-tratamiento-y-Proteccion-de-datos-personales-General.pdf"
+              target="_blank">Política de tratamiento de datos personales</a> y <a class="text-black"
+              href="https://groupcosbpo.com/wp-content/uploads/2023/08/AVISO-DE-PRIVACIDAD.pdf" target="_blank">Aviso de
+              privacidad</a>
+          </p>
+          <mat-radio-group [(ngModel)]="acceptTerms" class="mx-auto" color="primary">
+            <mat-radio-button [value]="1">Si</mat-radio-button>
+            <mat-radio-button [value]="2">No</mat-radio-button>
+          </mat-radio-group>
+          <button (click)="onClickButtonAcceptTerms()" class="mx-auto mt-4" type="button" mat-raised-button
+            color="primary" style="height: 48px; font-weight: 600;">Enviar</button>
+        </div>
+      </mat-tab>
+      <mat-tab label="Registrar" [disabled]="stateStepRegister">
+        <app-form-register-pqrs (onSubmitForm)="onSubmitForm()"></app-form-register-pqrs>
+      </mat-tab>
+      <mat-tab label="Seguimiento">
+        <app-tracking-table-pqrs></app-tracking-table-pqrs>
+      </mat-tab>
+    </mat-tab-group>
+  </section>
+</div>

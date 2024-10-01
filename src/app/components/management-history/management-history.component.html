@@ -1,0 +1,30 @@
+<mat-accordion multi>
+  <mat-expansion-panel *ngFor="let item of managments; let i = index; let first = first;">
+    <mat-expansion-panel-header>
+      <mat-panel-title class="fw-bold">Gestión PQRS N° {{ managments.length - i }}</mat-panel-title>
+    </mat-expansion-panel-header>
+    <section>
+      <div class="d-flex justify-content-between">
+        <section><span class="fw-bold">Gestionado por: </span><span>{{ item.responsible.name }}</span></section>
+        <section><span class="fw-bold">Estado: </span><span
+            *ngIf="item.management_state.pqrs_state && item.management_state.pqrs_state.name">{{
+            item.management_state.pqrs_state.name }}</span>
+        </section>
+      </div>
+      <section class="mt-3">
+        <span class="fw-bold">Respuesta PQRS:</span>
+        <p class="text-justify text-break">{{ item.response }}</p>
+        <div class="w-100"
+          *ngIf="item.attachments.length > 0 && first && (statePqrs === 'Cerrado' || statePqrs === 'Devuelto')">
+          <mat-chip-list #chipListEvidences>
+            <mat-chip *ngFor="let file of item.attachments" (removed)="sendFileManagment.emit(file.id)"
+              [selectable]="true" [removable]="true">
+              {{ file.name }}
+              <mat-icon matChipRemove>download</mat-icon>
+            </mat-chip>
+          </mat-chip-list>
+        </div>
+      </section>
+    </section>
+  </mat-expansion-panel>
+</mat-accordion>

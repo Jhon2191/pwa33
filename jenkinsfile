@@ -1,0 +1,35 @@
+def remote = [:]
+remote.name = "Front pqrs-externas QA"
+remote.host = "172.17.8.12"
+remote.allowAnyHosts = true
+
+        node {
+
+            withCredentials([usernamePassword(credentialsId: 'servers-montechelo', passwordVariable: 'PASS_SERVERS', usernameVariable: 'USER_SERVERS')]) {
+
+                remote.user = "$USER_SERVERS"
+                remote.password = "$PASS_SERVERS"
+
+
+
+                stage("Despliegue Front pqrs externas Qa") {
+
+
+                    echo 'Ejecucion Snapshot Nutanix'
+                    sshCommand remote: remote, command: "/var/www/mios/./.deploysnap.sh"
+                    echo "Status Rama"
+                    sshCommand remote: remote, command: 'cd /var/www/mios/mios-frontend/front-pqrs-externas && git status'
+                    echo "Despliegue"
+                    sshCommand remote: remote, command: 'cd /var/www/mios/mios-frontend/front-pqrs-externas && git pull'
+                    echo "Comando Npm"
+                    sshCommand remote: remote, command: 'cd /var/www/mios/mios-frontend/front-pqrs-externas && pwd && npm install --force'
+                    echo "Compilacion"
+                    sshCommand remote: remote, command: 'cd /var/www/mios/mios-frontend/front-pqrs-externas && pwd && ng build --output-path=dist-temp/create-invoice'
+                    echo "Cambio carpetas"
+                    sshCommand remote: remote, command: 'cd /var/www/mios/mios-frontend/front-pqrs-externas  && pwd && rm -rf dist-old && mv dist dist-old && mv dist-temp dist'
+
+
+                }
+            }
+
+        }

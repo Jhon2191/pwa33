@@ -1,0 +1,35 @@
+@import url('https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap');
+@import '@angular/material/theming';
+@include mat-core();
+$Mios-v2-front-primary: mat-palette($mat-cyan, 600);
+$Mios-v2-front-accent: mat-palette($mat-purple, 400);
+$Mios-v2-front-warn: mat-palette($mat-red, 800);
+$Mios-v2-front-theme: mat-light-theme((color: (primary: $Mios-v2-front-primary, accent: $Mios-v2-front-accent, warn: $Mios-v2-front-warn, )));
+$Mios-v2-front-dark-theme: mat-dark-theme((color: (primary: $Mios-v2-front-primary, accent: $Mios-v2-front-accent, warn: $Mios-v2-front-warn, )));
+$Mios-v2-front-typography: mat-typography-config($font-family: 'Nunito');
+@include mat-core($Mios-v2-front-typography);
+@include angular-material-theme($Mios-v2-front-theme);
+
+.dark-theme {
+    @include angular-material-theme($Mios-v2-front-dark-theme);
+}
+
+.light-theme {
+    @include angular-material-theme($Mios-v2-front-theme);
+}
+
+html,
+body {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+th {
+    color: white !important;
+    background-color: #2CABBC;
+    font-size: 14px !important;
+    font-weight: 700 !important;
+    text-align: center !important;
+}
